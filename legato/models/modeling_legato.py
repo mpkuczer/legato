@@ -64,7 +64,7 @@ class LegatoModel(MllamaForConditionalGeneration):
             logger.info(f"Loading vision encoder from {encoder_ref}")
             if 'config' in kwargs:
                 kwargs.pop('config')
-            model.vision_model = MllamaVisionModel.from_pretrained(encoder_ref, *model_args, **kwargs)
+            model.model.vision_model = MllamaVisionModel.from_pretrained(encoder_ref, *model_args, **kwargs)
             model.config.vision_config = model.vision_model.config
             for param in model.vision_model.parameters():
                 param.requires_grad = False

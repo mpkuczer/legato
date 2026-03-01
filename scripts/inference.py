@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # Load the model and processor
     model = LegatoModel.from_pretrained(args.model_path)
     processor = AutoProcessor.from_pretrained(args.processor_path)
-    generation_config = GenerationConfig(max_length=2048, num_beams=args.beam_size, repetition_penalty=1.1)
+    generation_config = GenerationConfig(max_length=2048, num_beams=args.beam_size, repetition_penalty=1.1, eos_token_id=2)
 
     args.image_path = os.path.abspath(args.image_path)
 

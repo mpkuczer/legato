@@ -15,6 +15,18 @@ def remove_special_tokens(arrays, special_tokens):
         outputs.append([tok for tok in array if tok not in special_tokens])
     return outputs
 
+def pad_to_portrait(image, width=1050, height=1485):
+    """Resize to target width and pad to portrait dimensions with white background.
+    Matches the preprocessing used in the official demo."""
+    image = image.convert("RGB")
+    w, h = image.size
+    image = image.resize((width, width * h // w))
+    if image.height >= height:
+        return image
+    canvas = Image.new("RGB", (width, height), (255, 255, 255))
+    canvas.paste(image, (0, 0))
+    return canvas
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Inference script for Legato model. Output to standard output.")
     parser.add_argument("--model_path", type=str, default="guangyangmusic/legato", help="Path to the trained model")
@@ -43,12 +55,12 @@ if __name__ == "__main__":
         if all(img.endswith(('.png', '.jpg', '.jpeg')) for img in os.listdir(args.image_path)):
             imgs = []
             for img_path in os.listdir(args.image_path):
-                imgs.append(Image.open(os.path.join(args.image_path, img_path)).convert("RGB"))
+                imgs.append(pad_to_portrait(Image.open(os.path.join(args.image_path, img_path))))
         else:
             dataset = load_from_disk(args.image_path)
             imgs = dataset['image']
     else:
-        imgs = [Image.open(args.image_path).convert("RGB")]
+        imgs = [pad_to_portrait(Image.open(args.image_path))]
 
     model = model.to(device=args.device)
     if args.fp16:
